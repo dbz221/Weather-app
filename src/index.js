@@ -1,17 +1,31 @@
-function getTemperature(response) {
+function displayTemperature(response) {
+  console.log(response.data);
+  let temperatureElement = document.querySelector("#current-temperature");
   let temperature = Math.round(response.data.temperature.current);
+  let currentDateELement = document.querySelector("#current-date");
+  let condition = response.data.condition.description;
+  let humidity = response.data.temperature.humidity;
+  let wind = response.data.wind.speed;
+  let icon = document.querySelector("#icon");
   let cityElement = document.querySelector("#current-city");
-  cityElement.innerHTML = searchInputElement.value;
-  let currentTemp = document.querySelector(".current-temperature-value");
-  currentTemp.innerHTML = temperature;
-}
+  let conditionElement = document.querySelector("#current-condition");
 
+  currentDateELement.innerHTML = formatDate(currentDate);
+  icon.innerHTML = `<img class="icon-dimensions"src="${response.data.condition.icon_url}">`;
+  cityElement.innerHTML = response.data.city;
+  temperatureElement.innerHTML = temperature;
+  conditionElement.innerHTML = `, ${condition} <br />Humidity: <strong>${humidity}%</strong>, Wind: <strong>${wind}km/h</strong>`;
+}
+function searchCity(city) {
+  let apiKey = "b2a5adcct04b33178913oc335f405433";
+  let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metric`;
+
+  axios.get(apiUrl).then(displayTemperature);
+}
 function search(event) {
   event.preventDefault();
-  let city = searchInputElement.value;
-  let apiURL = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}`;
-
-  axios.get(apiURL).then(getTemperature);
+  let searchInputElement = document.querySelector("#search-input");
+  searchCity(searchInputElement.value);
 }
 
 function formatDate(date) {
@@ -41,14 +55,9 @@ function formatDate(date) {
   return `${formattedDay} ${hours}:${minutes}`;
 }
 
-let searchInputElement = document.querySelector("#search-input");
-
 let searchForm = document.querySelector("#search-form");
 searchForm.addEventListener("submit", search);
 
-let currentDateELement = document.querySelector("#current-date");
 let currentDate = new Date();
 
-currentDateELement.innerHTML = formatDate(currentDate);
-
-let apiKey = "ebet14afo803932798f53163dbb80c50";
+searchCity("Tehran");
